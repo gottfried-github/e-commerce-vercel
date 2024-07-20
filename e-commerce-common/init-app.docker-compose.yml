@@ -1,0 +1,37 @@
+services:
+    base:
+        image: mongo
+        volumes: 
+            - ../data:/data/db
+            - .:/e-commerce-common
+        ports: 
+            - 27017:27017
+        environment:
+            MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+            MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+        command:
+            '--replSet rs0 --keyFile /data/db/keyfile --bind_ip base --dbpath /data/db'
+        healthcheck:
+            test: ["CMD", "bash", "-c", "/e-commerce-common/healthcheck.sh"]
+    node:
+        build: 
+            context: .
+            dockerfile: ./init-app.Dockerfile
+        volumes:
+            - ..:/app
+        environment: 
+            # credentials for the database user app: same as APP_USER and APP_PSSWD in the init service of init-db.docker-compose.yml
+            APP_DB_USER: ${APP_DB_USER}
+            APP_DB_PASS: ${APP_DB_PASS}
+
+            # database name and network name: same as DB_NAME and NET_NAME in the init service of init-db.docker-compose.yml
+            APP_DB_NAME: ${APP_DB_NAME}
+            NET_NAME: base
+            
+            # credentials for the app admin user to be created
+            USER_NAME: ${APP_USER_NAME}
+            USER_PSSWD: ${APP_USER_PSSWD}
+            USER_EMAIL: ${APP_USER_EMAIL}
+        depends_on:
+            base: 
+                condition: service_healthy
