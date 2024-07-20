@@ -1,0 +1,15 @@
+body {
+  margin: 0;
+  padding: 0px;
+
+  font-family: 'Lato';
+  font-weight: 300;
+
+  color: $text-main;
+  background-color: $background-main;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
