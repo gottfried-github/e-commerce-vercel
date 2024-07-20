@@ -1,12 +1,12 @@
 {
   "name": "e-commerce-app",
   "version": "1.0.0",
-  "description": "demo usage of bazar suite",
+  "description": "a simple product catalog app",
   "main": "index.js",
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "webpack"
+    "build": "./build.sh"
   },
   "repository": {
     "type": "git",
