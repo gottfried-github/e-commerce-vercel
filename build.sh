@@ -1,5 +1,4 @@
 #!/bin/bash
 
-# cp -r node_modules/tinymce public
-# cp index.js dist/front-end
+cp -r node_modules/tinymce public
 node_modules/.bin/webpack
