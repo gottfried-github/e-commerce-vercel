@@ -1,4 +1,4 @@
 #!/bin/bash
 
-cp -r node_modules/tinymce e-commerce-app/public
+cp -r node_modules/tinymce public
 node_modules/.bin/webpack
