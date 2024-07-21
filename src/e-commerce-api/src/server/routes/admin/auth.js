@@ -62,7 +62,7 @@ function auth(services, middleware) {
   // )
 
   router.get('/is-authenticated', (req, res) => {
-    req.log('/api/admin/auth/is-authenticated, req.user:', req.user)
+    console.log('/api/admin/auth/is-authenticated, req.user:', req.user)
     res.json(!!req.user)
   })
 
