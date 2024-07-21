@@ -1,5 +1,5 @@
-import Main from '../../e-commerce-react/src/admin.js'
-import '../../e-commerce-react/src/styles/admin.scss'
+import Main from '../e-commerce-react/src/admin.js'
+import '../e-commerce-react/src/styles/admin.scss'
 
 import api from '../../e-commerce-api/src/client/index.js'
 
