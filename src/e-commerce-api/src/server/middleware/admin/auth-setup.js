@@ -33,7 +33,7 @@ function setup(store) {
     )
   )
   passport.serializeUser((user, done) => {
-    log('passport serializeUser cb, user', user)
+    console.log('passport serializeUser cb, user', user)
 
     // see point 3. in `what happens during requests` in `passportjs` reference
     if (!user) return done(new Error('user serialization failed, user is falsy'))
@@ -43,7 +43,7 @@ function setup(store) {
   })
 
   passport.deserializeUser(async (id, done) => {
-    log('passport deserializeUser cb, id', id)
+    console.log('passport deserializeUser cb, id', id)
 
     let user = null
     try {
@@ -58,7 +58,7 @@ function setup(store) {
     // see point 6. in `what happens during requests` in `passportjs` reference
     if (!user) return done(null, false)
 
-    log('passport deserializeUser cb, user is truthy')
+    console.log('passport deserializeUser cb, user is truthy')
 
     done(null, user)
   })
