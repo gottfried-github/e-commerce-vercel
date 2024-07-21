@@ -34,7 +34,7 @@ function main(port) {
     },
   }
 
-  if (process.env.NODE_ENV === 'production') sessionOptions.cookie.secure = true
+  // if (process.env.NODE_ENV === 'production') sessionOptions.cookie.secure = true
 
   /* connect to database */
   const client = new MongoClient(process.env.MONGODB_URI)
