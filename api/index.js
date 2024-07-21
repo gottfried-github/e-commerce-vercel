@@ -1,15 +1,13 @@
 import path from 'path'
 import { fileURLToPath } from 'url'
-import fs from 'fs'
-import https from 'https'
 import session from 'express-session'
 import SessionStorage from 'connect-mongo'
 import express from 'express'
 import { MongoClient } from 'mongodb'
 
 import { imageScaleTemplates } from '../src/config.js'
-import { api as _api } from '../e-commerce-api/src/server/index.js'
-import _store from '../e-commerce-mongo/src/index.js'
+import { api as _api } from '../src/e-commerce-api/src/server/index.js'
+import _store from '../src/e-commerce-mongo/src/index.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
