@@ -2,10 +2,10 @@
 const config = {
   mongodb: {
     // In this project I only use migrate-mongo to `create` migration files, which doesn't use the `url` option
-    // url: `mongodb://${process.env.APP_DB_USER}:${process.env.APP_DB_PASS}@bazar-mongo-n/${process.env.APP_DB_NAME}`,
+    url: process.env.MONGODB_URI,
 
     // TODO Change this to your database name:
-    // databaseName: "YOURDATABASENAME",
+    // databaseName: "",
 
     options: {
       useNewUrlParser: true, // removes a deprecation warning when connecting
@@ -16,7 +16,7 @@ const config = {
   },
 
   // The migrations dir, can be an relative or absolute path. Only edit this when really necessary.
-  migrationsDir: './migrations',
+  migrationsDir: './src/e-commerce-mongo/migrations',
 
   // The mongodb collection where the applied changes are stored. Only edit this when really necessary.
   changelogCollectionName: 'changelog',

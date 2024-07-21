@@ -41,7 +41,7 @@ function main(port) {
   client.connect()
 
   /* initialize store and api */
-  const store = _store(client.db(process.env.APP_DB_NAME), client)
+  const store = _store(client.db(process.env.DB_NAME), client)
   const api = _api(store, {
     productUploadPath: 'public/product',
     productDiffPath: 'public',

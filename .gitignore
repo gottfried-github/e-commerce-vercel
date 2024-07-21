@@ -1,2 +1,4 @@
 node_modules
-e-commerce-app/node_modules
+
+.env
+.env.vercel

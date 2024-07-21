@@ -6,6 +6,20 @@ A modular e-commerce application. Consists of [e-commerce-api](https://github.co
 
 See the website live [here](http://gottfried.chost.com.ua:3000).
 
+# Initialize the app
+## Create MongoDB Atlas cluster
+
+## Integrate MongoDB Atlas cluster with Vercel
+
+## Get the URI for connecting to your cluster
+
+## Run migrations
+1. Remove `"type": "module"` from `package.json`
+2. Run: `MONGODB_URI=<connection string> ./node_modules/.bin/migrate-mongo up -f src/e-commerce-mongo/migrate-mongo-config.js`
+
+## Create admin user
+`node --env-file .env --trace-warnings e-commerce-signup/src/cli.js <username> <email> <password>`
+
 # Run
 ## Preparations
 ### Clone the repos
