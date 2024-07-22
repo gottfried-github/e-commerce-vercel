@@ -4,6 +4,7 @@ import createError from 'http-errors'
 import multer from 'multer'
 import { fileURLToPath } from 'url'
 import sharp from 'sharp'
+import { put } from '@vercel/blob'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
@@ -18,6 +19,14 @@ const makeLocalPath = (options, filePath) => {
   return path.relative(options.root, filePath)
 }
 
+const makeFilePathname = (options, productId, filename, suffix) => {
+  return path.join(
+    options.productUploadPath,
+    productId,
+    `${Date.now().toString()}${suffix ? `_${suffix}` : ''}${path.extname(filename)}`
+  )
+}
+
 /**
  * @param {String} options.productUploadPath path to uploads dir, relative to options.root
  * @param {String} options.productDiffPath path, relative to which actual pathname of each uploaded file should be stored
@@ -25,36 +34,39 @@ const makeLocalPath = (options, filePath) => {
  * @param {String} options.productPublicPrefix should be prepended to file's public path
  */
 function main(options) {
-  const multerMiddleware = multer({
-    storage: multer.diskStorage({
-      destination: async (req, file, cb) => {
-        if (!req.body?.id)
-          return cb(createError(400, "'id' field must precede 'files' in the formdata"))
-        const dirPath = path.join(options.root, path.join(options.productUploadPath, req.body.id))
+  const multerMiddleware = multer().array('files', 200)
 
-        await fs.mkdir(dirPath, { recursive: true })
-
-        cb(null, dirPath)
-      },
-      filename: (req, file, cb) => {
-        cb(null, `${Date.now().toString()}${path.extname(file.originalname)}`)
-      },
-    }),
-  }).array('files', 200)
-
-  const imageResizeMiddleware = async (req, res, next) => {
+  const imageUploadMiddleware = async (req, res, next) => {
     for (const file of req.files) {
+      const filePathname = makeFilePathname(options, req.body.id, file.originalname)
+
+      const fileData = await put(filePathname, file.buffer, {
+        access: 'public',
+        addRandomSuffix: false,
+      })
+
+      file.path = fileData.url
+
       const scaledPaths = {}
-      const filePathComponents = path.parse(file.path)
 
       for (const template of options.imageScaleTemplates) {
-        const filePathname = `${path.join(filePathComponents.dir, filePathComponents.name)}_${template.suffix}${filePathComponents.ext}`
-
-        await sharp(file.path)
+        const fileBuffer = await sharp(file.buffer)
           .resize(template.width, template.height, template.options)
-          .toFile(filePathname)
+          .toBuffer()
 
-        scaledPaths[template.suffix] = filePathname
+        const filePathname = makeFilePathname(
+          options,
+          req.body.id,
+          file.originalname,
+          template.suffix
+        )
+
+        const fileData = await put(filePathname, fileBuffer, {
+          access: 'public',
+          addRandomSuffix: false,
+        })
+
+        scaledPaths[template.suffix] = fileData.url
       }
 
       file.scaledPaths = scaledPaths
@@ -67,14 +79,14 @@ function main(options) {
     req.filesPaths = req.files.map(file => {
       const paths = Object.keys(file.scaledPaths).reduce(
         (paths, k) => {
-          paths.pathsPublic[k] = makePublicPath(options, file.scaledPaths[k])
-          paths.pathsLocal[k] = makeLocalPath(options, file.scaledPaths[k])
+          paths.pathsPublic[k] = file.scaledPaths[k]
+          paths.pathsLocal[k] = file.scaledPaths[k]
 
           return paths
         },
         {
-          pathsPublic: { original: makePublicPath(options, file.path) },
-          pathsLocal: { original: makeLocalPath(options, file.path) },
+          pathsPublic: { original: file.path },
+          pathsLocal: { original: file.path },
         }
       )
 
@@ -84,7 +96,7 @@ function main(options) {
     next()
   }
 
-  return [multerMiddleware, imageResizeMiddleware, pathsTransformMiddleware]
+  return [multerMiddleware, imageUploadMiddleware, pathsTransformMiddleware]
 }
 
 export default main

@@ -43,7 +43,7 @@ function main(port) {
   /* initialize store and api */
   const store = _store(client.db(process.env.DB_NAME), client)
   const api = _api(store, {
-    productUploadPath: 'public/product',
+    productUploadPath: 'product/',
     productDiffPath: 'public',
     root: __dirname,
     productPublicPrefix: '/',
