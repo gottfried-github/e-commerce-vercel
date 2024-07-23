@@ -1,5 +1,6 @@
 import fs from 'fs/promises'
 import path from 'path'
+import { list, del } from '@vercel/blob'
 
 /**
  * @param {String} options.productUploadPath path to uploads dir, relative to options.root
@@ -24,10 +25,23 @@ function main(store, options) {
     async delete(id) {
       const resProduct = await store.product.delete(id)
 
-      await fs.rm(path.join(options.root, options.productUploadPath, id), {
-        recursive: true,
-        force: true,
-      })
+      let hasMore = true
+      let cursor = null
+
+      while (hasMore) {
+        const {
+          blobs,
+          hasMore: _hasMore,
+          cursor: _cursor,
+        } = await list({ prefix: path.join(options.productUploadPath, id), cursor })
+
+        for (const blob of blobs) {
+          await del(blob.url)
+        }
+
+        hasMore = _hasMore
+        cursor = _cursor
+      }
 
       return resProduct
     },
@@ -50,8 +64,8 @@ function main(store, options) {
         // remove photos files from the filesystem
         try {
           for (const photo of photos) {
-            for (const k of Object.keys(photo.pathsLocal)) {
-              await fs.rm(path.join(options.root, photo.pathsLocal[k]))
+            for (const k of Object.keys(photo.pathsPublic)) {
+              await del(photo.pathsPublic[k])
             }
           }
         } catch (eFiles) {
@@ -94,8 +108,8 @@ function main(store, options) {
       // remove photos from filesystem
       try {
         for (const photo of photosToRemoveDocs) {
-          for (const k of Object.keys(photo.pathsLocal)) {
-            await fs.rm(path.join(options.root, photo.pathsLocal[k]))
+          for (const k of Object.keys(photo.pathsPublic)) {
+            await del(photo.pathsPublic[k])
           }
         }
       } catch (e) {
