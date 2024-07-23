@@ -8,23 +8,26 @@ import { put } from '@vercel/blob'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
-const makePublicPath = (options, filePath) => {
-  return path.join(
-    options.productPublicPrefix,
-    path.relative(path.join(options.root, options.productDiffPath), filePath)
-  )
-}
-
-const makeLocalPath = (options, filePath) => {
-  return path.relative(options.root, filePath)
-}
-
 const makeFilePathname = (options, productId, filenameNew, filename, suffix) => {
   return path.join(
     options.productUploadPath,
     productId,
     `${filenameNew}${suffix ? `_${suffix}` : ''}${path.extname(filename)}`
   )
+}
+
+const resizeAndUpload = async ({ file, options, template, productId, filename }) => {
+  const fileBuffer = await sharp(file.buffer)
+    .resize(template.width, template.height, template.options)
+    .toBuffer()
+  const filePathname = makeFilePathname(options, productId, filename, file.originalname)
+
+  const fileData = await put(filePathname, fileBuffer, {
+    access: 'public',
+    addRandomSuffix: false,
+  })
+
+  return fileData.url
 }
 
 /**
@@ -39,36 +42,29 @@ function main(options) {
   const imageUploadMiddleware = async (req, res, next) => {
     for (const file of req.files) {
       const filenameNew = Date.now().toString()
-      const filePathname = makeFilePathname(options, req.body.id, filenameNew, file.originalname)
 
-      const fileData = await put(filePathname, file.buffer, {
-        access: 'public',
-        addRandomSuffix: false,
+      const uploadedFileUrl = await resizeAndUpload({
+        file,
+        options,
+        template: options.imageScaleTemplates.original,
+        productId: req.body.id,
+        filename: filenameNew,
       })
 
       file.path = fileData.url
 
       const scaledPaths = {}
 
-      for (const template of options.imageScaleTemplates) {
-        const fileBuffer = await sharp(file.buffer)
-          .resize(template.width, template.height, template.options)
-          .toBuffer()
-
-        const filePathname = makeFilePathname(
+      for (const template of options.imageScaleTemplates.other) {
+        const uploadedFileUrl = await resizeAndUpload({
+          file,
           options,
-          req.body.id,
-          filenameNew,
-          file.originalname,
-          template.suffix
-        )
-
-        const fileData = await put(filePathname, fileBuffer, {
-          access: 'public',
-          addRandomSuffix: false,
+          template: template,
+          productId: req.body.id,
+          filename: filenameNew,
         })
 
-        scaledPaths[template.suffix] = fileData.url
+        scaledPaths[template.suffix] = uploadedFileUrl
       }
 
       file.scaledPaths = scaledPaths
