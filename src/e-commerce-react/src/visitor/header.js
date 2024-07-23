@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom'
 
 import IconInstagram from './icons/IconInstagram.js'
 import IconFacebook from './icons/IconFacebook.js'
+import IconMenu from './icons/IconMenu.js'
+import IconClose from './icons/IconClose.js'
 
 function Header({ sectionsPos }) {
   const [isOpen, setIsOpen] = useState(false)
@@ -49,7 +51,9 @@ function Header({ sectionsPos }) {
           onClick={() => {
             setIsOpen(true)
           }}
-        ></div>
+        >
+          <IconMenu className="icon-hamburger" />
+        </div>
       </header>
       <header className={`header-mobile${isOpen ? ' header-mobile_opened' : ''}`}>
         <div className="header-mobile__content">
@@ -111,7 +115,9 @@ function Header({ sectionsPos }) {
             onClick={() => {
               setIsOpen(false)
             }}
-          ></div>
+          >
+            <IconClose className="icon-close" />
+          </div>
           <p id="timestamp">{`fi-jewelry.com.ua, ${new Date().getFullYear()}. ©`}</p>
         </div>
       </header>

@@ -19,6 +19,8 @@ import Footer from './visitor/footer.js'
 import home from './visitor/home.js'
 import product from './visitor/product.js'
 
+import './assets/images/favicon.svg'
+
 function main(container, api) {
   function Index() {
     // pass positions of sections in Home to Header for it to scroll to when links are clicked (see Passing sections positions from `Home` to `Header` in readme)

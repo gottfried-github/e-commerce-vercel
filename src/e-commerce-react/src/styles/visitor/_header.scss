@@ -45,13 +45,23 @@
     grid-row: 1;
     justify-self: flex-end;
 
+    display: flex;
+
     width: 24px;
     height: 24px;
 
-    background-image: url('../assets/images/menu-open.svg');
-    background-position: center;
-    // background-size: contain;
-    background-repeat: no-repeat;
+    .icon-hamburger {
+      width: 100%;
+
+      margin: auto;
+
+      transition: fill $animation-text;
+      fill: $text-main-bold;
+
+      &:hover {
+        fill: $text-main-hover;
+      }
+    }
   }
 
   @media (min-width: 325px) {
@@ -98,7 +108,7 @@
 
   // see Mobile menu view in product spec
   overflow-y: scroll;
-  z-index: 2;
+  z-index: 20;
 
   background-color: $text_main;
   color: $background-main;
@@ -150,7 +160,7 @@
         }
   
         .nav-link:hover {
-          color: $text-main-hover;
+          color: $text-main-hover-light;
         }
       }
   
@@ -169,13 +179,23 @@
       grid-row: 1;
       justify-self: flex-end;
   
+      display: flex;
+
       width: 24px;
       height: 24px;
-  
-      background-image: url('../assets/images/cross.svg');
-      background-position: center;
-      background-size: contain;
-      background-repeat: no-repeat;
+
+      .icon-close {
+        margin: auto;
+
+        width: 100%;
+
+        transition: fill $animation-text;
+        fill: $background-main;
+
+        &:hover {
+          fill: $text-main-hover-light;
+        }
+      }
     }
   
     #timestamp {
