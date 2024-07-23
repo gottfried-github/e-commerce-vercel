@@ -20,7 +20,13 @@ const resizeAndUpload = async ({ file, options, template, productId, filename })
   const fileBuffer = await sharp(file.buffer)
     .resize(template.width, template.height, template.options)
     .toBuffer()
-  const filePathname = makeFilePathname(options, productId, filename, file.originalname)
+  const filePathname = makeFilePathname(
+    options,
+    productId,
+    filename,
+    file.originalname,
+    template.suffix || null
+  )
 
   const fileData = await put(filePathname, fileBuffer, {
     access: 'public',
