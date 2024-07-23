@@ -1,6 +1,6 @@
 #about {
   display: grid;
-  grid-template-columns: 8px 1fr 8px;
+  grid-template-columns: 25px 1fr 25px;
   position: relative;
   padding: 665px 0px 50px 0px;
 
@@ -21,9 +21,10 @@
     margin: 0;
     padding: 0px;
 
+    max-width: 500px;
     text-align: right;
 
-    color: $accent;
+    color: $background-main;
     font-weight: 200;
     font-style: normal;
 
@@ -31,7 +32,7 @@
   }
 
   @media (min-width: 325px) {
-    grid-template-columns: 16px 1fr 16px;
+    grid-template-columns: 25px 1fr 25px;
   }
 
   @media (min-width: 500px) {
@@ -54,7 +55,7 @@
   }
 
   @media (min-width: 970px) {
-    grid-template-columns: 16px 1fr 1fr 16px;
+    grid-template-columns: 25px 1fr 1fr 25px;
     height: 650px;
     padding: 0px;
 
@@ -85,8 +86,14 @@
     }
   }
 
-  // 1616px (320px (product-card width) * 5) + 16px (horizontal margin) * 2
-  @media (min-width: 1648px) {
-    grid-template-columns: 1fr 808px 808px 1fr;
+  // 1405px = 320px (product-card width) * 4 + 25px (grid column-gap) * 3 + 25px (horizontal margin) * 2
+  @media (min-width: 1405px) {
+    // 678px = (320px (product-card width) * 4 + 25px (grid column-gap) * 3)
+    grid-template-columns: 1fr 678px 678px 1fr;
   }
+
+  // // 1616px (320px (product-card width) * 5) + 16px (horizontal margin) * 2
+  // @media (min-width: 1648px) {
+  //   grid-template-columns: 1fr 808px 808px 1fr;
+  // }
 }
