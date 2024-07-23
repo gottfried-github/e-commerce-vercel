@@ -51,7 +51,7 @@ function main(options) {
         filename: filenameNew,
       })
 
-      file.path = fileData.url
+      file.path = uploadedFileUrl
 
       const scaledPaths = {}
 
