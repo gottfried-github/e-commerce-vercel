@@ -19,11 +19,11 @@ const makeLocalPath = (options, filePath) => {
   return path.relative(options.root, filePath)
 }
 
-const makeFilePathname = (options, productId, filename, suffix) => {
+const makeFilePathname = (options, productId, filenameNew, filename, suffix) => {
   return path.join(
     options.productUploadPath,
     productId,
-    `${Date.now().toString()}${suffix ? `_${suffix}` : ''}${path.extname(filename)}`
+    `${filenameNew}${suffix ? `_${suffix}` : ''}${path.extname(filename)}`
   )
 }
 
@@ -38,7 +38,8 @@ function main(options) {
 
   const imageUploadMiddleware = async (req, res, next) => {
     for (const file of req.files) {
-      const filePathname = makeFilePathname(options, req.body.id, file.originalname)
+      const filenameNew = Date.now().toString()
+      const filePathname = makeFilePathname(options, req.body.id, filenameNew, file.originalname)
 
       const fileData = await put(filePathname, file.buffer, {
         access: 'public',
@@ -57,6 +58,7 @@ function main(options) {
         const filePathname = makeFilePathname(
           options,
           req.body.id,
+          filenameNew,
           file.originalname,
           template.suffix
         )
