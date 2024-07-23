@@ -1,6 +1,10 @@
 node_modules
+dist
+public
+backup
 
 .env
 .env.init
 .env.vercel
 .vercel
+.env*.local

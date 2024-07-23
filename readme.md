@@ -7,6 +7,9 @@ A modular e-commerce application. Consists of [e-commerce-api](https://github.co
 See the website live [here](http://gottfried.chost.com.ua:3000).
 
 # Initialize the app
+## Initialize local stuff
+`./init.sh`
+
 ## Set up environment variables
 I have three files containing environment variables.
 
@@ -59,6 +62,17 @@ In `Environemt Variables` section of the project's `Settings`, click the `Import
 
 ### 2.2. Create a Vercel Blob Store for the project
 Creating a Blob Store will add `BLOB_READ_WRITE_TOKEN` environment variable to the project.
+
+## 3. Run the project locally
+### 3.1. Connect the project on Vercel to the local directory
+Run `vercel` and choose the existing project you created in `2.1.` to link to the local directory.
+
+### 3.2. Pull environment from Vercel
+Run `vercel env pull`. This will create `.env.local` file, which our `dev` script uses.
+
+### 3.3. Build and run
+1. Run `npm run build`
+2. Run `npm run dev`
 
 # Back up and restore
 ## Database
