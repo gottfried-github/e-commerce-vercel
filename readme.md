@@ -7,79 +7,63 @@ A modular e-commerce application. Consists of [e-commerce-api](https://github.co
 See the website live [here](http://gottfried.chost.com.ua:3000).
 
 # Initialize the app
-## Create MongoDB Atlas cluster
+## Set up environment variables
+I have three files containing environment variables.
 
-## Integrate MongoDB Atlas cluster with Vercel
+`.env.init` is for initializing the database.
 
-## Get the URI for connecting to your cluster
+`.env.vercel` is to be imported into the Vercel project.
 
-## Run migrations
+The `APP_ADMIN_` variables in `.env.init` aren't actually used but the initialization scripts, you'll have to pass them as arguments to the signup script. I just add these into the file for convenience, to keep all the data in one place.
+
+## 1. Initialize the database
+### 1.1. Create MongoDB Atlas cluster
+
+### 1.2. Get database data into environment variables
+#### Variables to use for initialization and production
+In Atlas account, select Node.js driver and copy the url. 
+
+Add the url as `MONGODB_URI` into `.env.init` and `.env.vercel`.
+
+Copy the name of the database in the Atlas cluster which you will use for the app.
+
+Add it as `DB_NAME` in `.env.init` and `.env.vercel`.
+
+#### Variable for the back up script (only needed for backup)
+In the Atlas account, copy the database connection string for `shell` (`mongosh`). 
+
+Then, reformat the string into [proper format](https://www.mongodb.com/docs/manual/reference/connection-string/#srv-connection-format). 
+
+E.g., Atlas will give you the the string in the following format:
+
+`mongodb+srv://host/`
+
+And what you need to do is to transform it into the following, adding username, password and database name from your Atlas account:
+
+`mongodb+srv://<username>:<password>@host/<database name>`
+
+Add this string into `.env.init` as `MONGODB_URI_SHELL`. The init scripts don't use this but I add this for convenience.
+
+### 1.3. Run migrations
 1. Remove `"type": "module"` from `package.json`
-2. Run: `MONGODB_URI=<connection string> ./node_modules/.bin/migrate-mongo up -f src/e-commerce-mongo/migrate-mongo-config.js`
+2. Run: `MONGODB_URI=<variable value> ./node_modules/.bin/migrate-mongo up -f src/e-commerce-mongo/migrate-mongo-config.js`
 
-## Create admin user
-`node --env-file .env --trace-warnings e-commerce-signup/src/cli.js <username> <email> <password>`
+### 1.4. Create admin user
+`node --env-file .env.init --trace-warnings e-commerce-signup/src/cli.js <APP_ADMIN_USERNAME> <APP_ADMIN_EMAIL> <APP_ADMIN_PSSWD>`
 
-# Run
-## Preparations
-### Clone the repos
-Clone [e-commerce-common](https://github.com/gottfried-github/e-commerce-common), [e-commerce-mongo](https://github.com/gottfried-github/e-commerce-mongo), [e-commerce-api](https://github.com/gottfried-github/e-commerce-api), [e-commerce-react](https://github.com/gottfried-github/e-commerce-react), [e-commerce-app](https://github.com/gottfried-github/e-commerce-app) and [e-commerce-signup](https://github.com/gottfried-github/e-commerce-signup) into a common root directory. Perform all further instructions inside that directory.
+## 2. Initialize Vercel project
+### 2.1. Create a project on vercel from the github repo
 
-## Instructions
-From each of the subfolders - `e-commerce-common`, `e-commerce-mongo`, `e-commerce-api`, `e-commerce-front-end`, `e-commerce-app`, `e-commerce-signup` - run `npm install`. 
+### 2.2. Import environment variables
+In `Environemt Variables` section of the project's `Settings`, click the `Import .env` button and upload `.env.vercel`.
 
-Then, run the initialization commands from within `e-commerce-common`:
-
-```shell
-cd e-commerce-common
-
-# create data directory and a keyfile for the database
-./init.sh
-```
-
-### 1. Initialize the database
-From within `e-commerce-common`, run the following.
-
-Run this command and wait a few moments to make sure the script has connected to the database and initialized it (you should see `mongosh` logs from the `init` container in the stdout). Then you can interrupt (`CTRL+c`).
-
-`docker compose -f init-db.docker-compose.yml up --build`
-
-### 2. Apply migrations and create admin user for the app
-First, temporarily remove the `"type": "module"` declaration from `e-commerce-common/package.json` and `e-commerce-mongo/package.json` [`1`].
-
-Then, from within `e-commerce-common`, run the following and wait a few moments until the scripts are executed (you should see logs from the `node` container):
-
-`docker compose -f init-app.docker-compose.yml up --build`
-
-Then, add the `"type": "module"` declaration back in.
-
-### 3. Run the application
-From within `e-commerce-common`, run the following and wait a few moments until the server starts (you should see logs from the `node` container):
-
-`docker compose -f run.docker-compose.yml up --build`
-
-### Access the network
-run `docker ps`, find container with IMAGE of "fi-common_node" and copy it's ID (e.g., e28354082f09)
-
-then `docker inspect` that container and find *NetworkSettings.Networks.fi-common_default.IPAddress*
-
-this is taken from [here](https://stackoverflow.com/a/56741737)
-
-### Notes
-1. `migrate-mongo`, which is run in `init-app.sh`, doesn't work with es6 modules.
+### 2.2. Create a Vercel Blob Store for the project
+Creating a Blob Store will add `BLOB_READ_WRITE_TOKEN` environment variable to the project.
 
 # Back up and restore
 ## Database
 ### Back up
-From `e-commerce-common` directory, run:
-
-1. `docker compose -f backup.docker-compose.yml run --build backup bash`
-
-Inside the running container, run:
-
-2. `cd /app/e-commerce-common && ./backup-db.sh`
-
-This will produce a database dump in `../backup/db/`
+Run `MONGODB_URI_SHELL=<variable value> ./backup-db.sh`
 
 ### Restore
 Assuming you have a database and app user set up, i.e., you have run `1` and `2` from [Run](#run).
@@ -103,34 +87,6 @@ This will produce a directory with a `.tar.gz` file inside in `backups/uploads/`
 
 ### Restore
 In `e-commerce-app`, extract the `.tar.gz` file.
-
-## Run migrations
-First, temporarily remove the `"type": "module"` declaration from `e-commerce-common/package.json` and `e-commerce-mongo/package.json` [`1`].
-
-1. from `e-commerce-common`, run:
-
-`docker compose -f run.docker-compose.yml run node bash`
-
-2. inside the running container, run:
-
-`/app/e-commerce-common/node_modules/.bin/migrate-mongo up -f /app/e-commerce-common/migrate-mongo-config.js`
-
-or, for down:
-
-`/app/e-commerce-common/node_modules/.bin/migrate-mongo down -f /app/e-commerce-common/migrate-mongo-config.js`
-
-# Self-signed SSL certificate
-The instructions are taken from [`1`].
-
-In `e-commerce-app`:
-
-1. `mkdir cert && cd cert`
-2. generate a private key: `openssl genrsa -out key.pem`
-3. generate a Certificate Signing Request (CSR): `openssl req -new -key key.pem -out csr.pem`
-4. generate the SSL certificate: `openssl x509 -req -days 365 -in csr.pem -signkey key.pem -out cert.pem`
-
-## Refs
-1. https://dev.to/devland/how-to-generate-and-use-an-ssl-certificate-in-nodejs-2996
 
 # `config.js`
 ## `imageScaleTemplates`
