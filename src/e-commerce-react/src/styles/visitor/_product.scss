@@ -223,6 +223,12 @@
 
       a {
         text-decoration: underline;
+
+        transition: color $animation-text;
+
+        &:hover {
+          color: $text-main-hover;
+        }
       }
 
       p:first-child, ul:first-child, ol:first-child {
