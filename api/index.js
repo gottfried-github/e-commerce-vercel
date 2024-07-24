@@ -44,7 +44,7 @@ function main(port) {
   const store = _store(client.db(process.env.DB_NAME), client)
   const api = _api(store, {
     productUploadPath: 'product/',
-    productDiffPath: 'public',
+    productDiffPath: 'product/',
     root: __dirname,
     productPublicPrefix: '/',
     imageScaleTemplates,

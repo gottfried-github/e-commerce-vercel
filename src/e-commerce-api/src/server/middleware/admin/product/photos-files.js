@@ -33,7 +33,10 @@ const resizeAndUpload = async ({ file, options, template, productId, filename })
     addRandomSuffix: false,
   })
 
-  return fileData.url
+  return {
+    url: fileData.url,
+    pathname: fileData.pathname,
+  }
 }
 
 /**
@@ -49,7 +52,7 @@ function main(options) {
     for (const file of req.files) {
       const filenameNew = Date.now().toString()
 
-      const uploadedFileUrl = await resizeAndUpload({
+      const uploadedFilePaths = await resizeAndUpload({
         file,
         options,
         template: options.imageScaleTemplates.original,
@@ -57,12 +60,12 @@ function main(options) {
         filename: filenameNew,
       })
 
-      file.path = uploadedFileUrl
+      file.paths = uploadedFilePaths
 
       const scaledPaths = {}
 
       for (const template of options.imageScaleTemplates.other) {
-        const uploadedFileUrl = await resizeAndUpload({
+        const uploadedFilePaths = await resizeAndUpload({
           file,
           options,
           template: template,
@@ -70,7 +73,7 @@ function main(options) {
           filename: filenameNew,
         })
 
-        scaledPaths[template.suffix] = uploadedFileUrl
+        scaledPaths[template.suffix] = uploadedFilePaths
       }
 
       file.scaledPaths = scaledPaths
@@ -83,14 +86,14 @@ function main(options) {
     req.filesPaths = req.files.map(file => {
       const paths = Object.keys(file.scaledPaths).reduce(
         (paths, k) => {
-          paths.pathsPublic[k] = file.scaledPaths[k]
-          paths.pathsLocal[k] = file.scaledPaths[k]
+          paths.pathsPublic[k] = file.scaledPaths[k].url
+          paths.pathsLocal[k] = file.scaledPaths[k].pathname
 
           return paths
         },
         {
-          pathsPublic: { original: file.path },
-          pathsLocal: { original: file.path },
+          pathsPublic: { original: file.paths.url },
+          pathsLocal: { original: file.paths.pathname },
         }
       )
 
