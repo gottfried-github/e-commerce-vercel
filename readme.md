@@ -93,9 +93,7 @@ Inside the running container, run:
 
 ## Uploads
 ### Back up
-From `e-commerce-common`, run:
-
-`./backup-files.sh`
+`node --env-file .env.init backup-files.js`
 
 This will produce a directory with a `.tar.gz` file inside in `backups/uploads/`
 

@@ -1,5 +1,6 @@
 import storeAdmin from './admin/store/store.js'
 import resourcesAdmin from './admin/resources/resources.js'
+import filesAdmin from './admin/files.js'
 import storeVisitor from './visitor/store.js'
 
 function main(store, options) {
@@ -10,6 +11,11 @@ function main(store, options) {
     },
     resources: {
       admin: resourcesAdmin(store, options),
+    },
+    other: {
+      admin: {
+        files: filesAdmin(options),
+      },
     },
   }
 }

@@ -4,6 +4,7 @@ import passport from 'passport'
 import { auth } from './auth.js'
 import product from './product.js'
 import user from './user.js'
+import files from './files.js'
 
 function admin(services, middleware, options) {
   const router = Router()
@@ -29,6 +30,7 @@ function admin(services, middleware, options) {
 
   router.use('/product', product(services.resources.product, middleware.product).router)
   router.use('/user', user().router)
+  router.use('/files', files(services.other.files).router)
 
   /* central error handling */
   router.use(middleware.errorHandler)

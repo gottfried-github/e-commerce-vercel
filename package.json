@@ -8,7 +8,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "./build.sh",
     "watch": "webpack --watch",
-    "dev": "nodemon --env-file .env.local api/index.js"
+    "dev": "nodemon --env-file .env.local --verbose -e js api/index.js"
   },
   "repository": {
     "type": "git",

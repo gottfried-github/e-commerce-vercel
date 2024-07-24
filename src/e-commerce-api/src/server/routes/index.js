@@ -21,6 +21,7 @@ function main(services, middleware, options) {
     admin(
       {
         resources: services.resources.admin,
+        other: services.other.admin,
       },
       { ...middleware.admin, ...middleware.common },
       options
